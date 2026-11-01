@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>JUMPING JACK - FINAL</title>
+<style>
+html,body{margin:0;padding:0;overflow:hidden;background:#5ec6ff;height:100%;font-family:Arial}
+canvas{display:block;width:100%;height:100%}
+#top{position:absolute;top:10px;left:0;width:100%;text-align:center;z-index:2}
+#top b{background:#000;color:#fff;padding:7px 14px;border-radius:20px;font-size:14px}
+#snd{position:absolute;top:10px;right:10px;z-index:3;background:#fff;border:none;border-radius:20px;padding:6px 10px;font-weight:900;font-size:12px}
+#over{position:absolute;inset:0;background:rgba(0,0,0,0.94);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:10;color:#fff;padding:15px;text-align:center}
+#over.show{display:flex}
+.box{background:#1e293b;border:3px solid #22c55e;border-radius:16px;padding:18px;max-width:350px;width:100%}
+.num{font-size:30px;background:#22c55e;color:#fff;padding:12px;border-radius:10px;font-weight:900;margin:10px 0;letter-spacing:1px}
+.btn{width:100%;padding:13px;margin:6px 0;border:none;border-radius:10px;font-weight:900;font-size:15px;cursor:pointer}
+.g{background:#22c55e;color:#fff}.y{background:#facc15;color:#000}.r{background:#444;color:#ccc}.bl{background:#0ea5e9;color:#fff}
+.must{background:#ff0000;color:#fff;font-size:17px;border:2px solid yellow}
+input{width:100%;padding:13px;border-radius:10px;border:3px solid #22c55e;text-align:center;font-weight:bold;font-size:16px;margin:8px 0;box-sizing:border-box}
+</style>
+</head>
+<body>
+<div id="top"><b>Score:<span id="sc">0</span> Best:<span id="bs">0</span></b></div>
+<button id="snd" onclick="toggleSound()">🔊 SOUND ON</button>
+<canvas id="g"></canvas>
+
+<div id="over">
+<h1 style="margin:5px">💀 GAME OVER</h1>
+<h3 id="fs" style="color:yellow;margin:5px"></h3>
+<div class="box">
+<p style="margin:0 0 5px;color:#22c55e;font-weight:900">Pay 20 Bob to Continue</p>
+<div class="num">0707811193</div>
+
+<button class="btn bl" onclick="stkPush()">📱 PAY 20 BOB - STK PUSH</button>
+<a class="btn y" href="https://wa.me/254707811193?text=Nimelipa%2020%20BOB%20code%3A%20" target="_blank" style="display:block;text-decoration:none;text-align:center">💬 WHATSAPP</a>
+
+<input id="cd" placeholder="Weka M-PESA Code - LAZIMA!" maxlength="10">
+
+<button class="btn must" onclick="pay()">🔒 PAY 20 BOB TO CONTINUE</button>
+
+<p style="font-size:11px;color:#ffaaaa;margin:6px 0">Example code: QGH7Y9K2L1 - Must be 10 chars</p>
+
+<button class="btn r" onclick="restart()">RESTART FROM 0 (Lose Score)</button>
+</div>
+<p style="font-size:10px;color:gray;margin-top:8px">M-PESA 0707811193 - Arnold Devs</p>
+</div>
+
+<script>
+var c=document.getElementById('g'), x=c.getContext('2d');
+var W=innerWidth,H=innerHeight; c.width=W;c.height=H;
+window.addEventListener('resize',function(){W=innerWidth;H=innerHeight;c.width=W;c.height=H;});
+var p,obs=[],coins=[],s=0,bst=0,f=0,dead=0,spd=6,soundOn=1,audioCtx;
+bst=localStorage.getItem('jj_final')||0; document.getElementById('bs').innerHTML=bst;
+
+function initAudio(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+function playTone(freq,dur,vol){if(!soundOn)return;initAudio();try{var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='square';o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}catch(e){}}
+function sJump(){playTone(450,0.12,0.4);setTimeout(function(){playTone(700,0.12,0.3);},80);}
+function sCoin(){playTone(900,0.1,0.4);setTimeout(function(){playTone(1300,0.15,0.3);},70);}
+function sDie(){playTone(200,0.25,0.5);setTimeout(function(){playTone(90,0.5,0.4);},150);}
+function toggleSound(){soundOn=!soundOn;document.getElementById('snd').innerHTML=soundOn?'🔊 SOUND ON':'🔇 OFF';if(soundOn)initAudio();}
+
+function init(){obs=[];coins=[];s=0;f=0;spd=6;dead=0;p={x:70,y:H-130,w:34,h:52,vy:0,j:0};document.getElementById('over').className='';document.getElementById('sc').innerHTML=0;loop();}
+function restart(){if(confirm('Upoteze score '+s+'?'))init();}
+
+function drawHuman(px,py){
+ var run=Math.sin(f*0.35)*6; var bob=Math.sin(f*0.25)*1.5;
+ // shadow
+ x.fillStyle='rgba(0,0,0,0.25)'; x.beginPath(); x.ellipse(px+17,py+55,14,4,0,0,6.28); x.fill();
+ // shoes red - like banner
+ x.fillStyle='#dc2626'; x.fillRect(px+4,py+50+run/2,12,6); x.fillRect(px+18,py+50-run/2,12,6);
+ x.fillStyle='#fff'; x.fillRect(px+4,py+53+run/2,12,2);
+ // jeans
+ x.fillStyle='#1e40af'; x.fillRect(px+6,py+36+run/2,8,15); x.fillRect(px+20,py+36-run/2,8,15);
+ // hoodie blue
+ x.fillStyle='#2563eb'; x.fillRect(px+3,py+16,28,22); x.fillStyle='#1e40af'; x.fillRect(px+3,py+16,28,5);
+ // backpack yellow - human detail
+ x.fillStyle='#fbbf24'; x.fillRect(px+10,py+18,14,12); x.fillStyle='#92400e'; x.fillRect(px+12,py+20,10,2);
+ // arms skin
+ x.fillStyle='#fdba74'; x.fillRect(px-2,py+18+run/2,7,12); x.fillRect(px+28,py+18-run/2,7,12);
+ x.fillStyle='#334155'; x.fillRect(px-2,py+27+run/2,7,6); x.fillRect(px+28,py+27-run/2,7,6);
+ // head - real human
+ x.fillStyle='#ffdbac'; x.beginPath(); x.arc(px+17,py+9+bob,11,0,6.28); x.fill();
+ // hair brown
+ x.fillStyle='#451a03'; x.fillRect(px+6,py+0+bob,22,9); x.beginPath(); x.arc(px+17,py+4+bob,12,3.14,6.28); x.fill();
+ // eyes
+ x.fillStyle='#000'; x
