@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>JUMPING JACK - Banner Boy</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#22c55e">
+<style>
+html,body{margin:0;padding:0;overflow:hidden;background:#5ec6ff;height:100%;font-family:Arial}
+canvas{display:block;width:100%;height:100%}
+#t{position:absolute;top:10px;width:100%;text-align:center;z-index:2}
+#t b{background:#000;color:#fff;padding:6px 14px;border-radius:20px;font-size:13px}
+#b2{position:absolute;top:45px;left:50%;transform:translateX(-50%);background:orange;color:#000;padding:5px 15px;border-radius:20px;font-weight:900;z-index:2}
+#o{position:absolute;inset:0;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9;padding:18px;text-align:center;color:#fff}
+#o.show{display:flex}
+.bx{background:#1e293b;border:3px solid #22c55e;border-radius:14px;padding:16px;max-width:340px;width:100%;margin:10px 0}
+.nm{font-size:28px;background:#22c55e;padding:10px;border-radius:10px;margin:8px 0;font-weight:900}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-weight:900;margin:5px 0;font-size:15px;cursor:pointer;display:block;text-decoration:none;text-align:center}
+.g{background:#22c55e;color:#fff}.y{background:#eab308;color:#000}.r{background:#444;color:#fff}.bl{background:#0ea5e9;color:#fff}
+input{width:100%;padding:12px;border-radius:10px;border:2px solid #22c55e;margin:8px 0;text-align:center;font-size:15px;font-weight:bold}
+</style>
+</head>
+<body>
+<div id="t"><b>Score:<span id="sc">0</span> Best:<span id="bs">0</span></b></div>
+<div id="b2">JUMPING JACK</div>
+<canvas id="g"></canvas>
+<div id="o"><h1>💀 GAME OVER</h1><h2 id="fs" style="color:yellow;margin:6px;font-size:16px"></h2>
+<div class="bx"><h2 style="color:#22c55e;font-size:18px">🔒 PAY 20 BOB TO CONTINUE</h2><div class="nm">0707811193</div>
+<button class="btn bl" onclick="stkPush()">📱 PAY 20 BOB INSTANT - STK PUSH</button>
+<a class="btn y" href="https://wa.me/254707811193?text=Paid%2020BOB%20JUMPING%20JACK%20code%3A%20" target="_blank">💬 WHATSAPP VERIFY</a>
+<input id="cd" placeholder="Enter M-PESA Code after paying">
+<button class="btn g" onclick="pay()">✅ I PAID - CONTINUE WITH SCORE</button>
+<button class="btn r" onclick="hardReset()">❌ RESET TO 0</button>
+</div><p style="font-size:10px;color:gray">JUMPING JACK - Banner Boy Version<br>0707811193</p></div>
+<script>
+const c=document.getElementById('g'),x=c.getContext('2d');let W,H,p,obs=[],coins=[],s=0,bst=localStorage.jj_banner||0,spd=6,f=0,dead=0;
+document.getElementById('bs').innerText=bst;
+function R(){W=c.width=innerWidth;H=c.height=innerHeight}R();addEventListener('resize',R);
+function init(){obs=[];coins=[];s=0;f=0;spd=6;dead=0;p={x:70,y:H-140,w:32,h:56,vy:0,j:0};document.getElementById('o').classList.remove('show');document.getElementById('sc').innerText=0;loop()}
+function drawBannerBoy(px,py){
+ let bob=Math.sin(f*0.28)*2;
+ let run = Math.sin(f*0.35)*8;
+ // shadow
+ x.fillStyle='rgba(0,0,0,0.2)'; x.beginPath(); x.ellipse(px+16,py+55,14,4,0,0,7); x.fill();
+ // legs - blue jeans
+ x.fillStyle='#2a4b8d'; 
+ x.fillRect(px+8, py+36+run/3, 8, 16); 
+ x.fillRect(px+18, py+36-run/3, 8, 16);
+ // shoes - red like banner
+ x.fillStyle='#e11d48'; x.fillRect(px+5, py+50+run/3, 13, 6); x.fillRect(px+15, py+50-run/3, 13, 6);
+ x.fillStyle='#fff'; x.fillRect(px+5, py+54+run/3, 13, 2); x.fillRect(px+15, py+54-run/3, 13, 2);
+ // body - blue hoodie
+ x.fillStyle='#2563eb'; x.fillRect(px+4, py+16, 24, 22);
+ // backpack yellow
+ x.fillStyle='#fbbf24'; x.fillRect(px+8, py+18, 6, 14); x.fillRect(px+18, py+18, 6, 14);
+ x.fillStyle='#a16207'; x.fillRect(px+6, py+20, 20, 10);
+ // arms
+ x.fillStyle='#ffdbac'; 
+ x.fillRect(px-2, py+18+run/2, 8, 12); 
+ x.fillRect(px+22, py+18-run/2, 8, 12);
+ // gloves black like banner
+ x.fillStyle='#3f3f46'; x.fillRect(px-2, py+28+run/2, 8, 6); x.fillRect(px+22, py+28-run/2, 8, 6);
+ // head
+ x.fillStyle='#ffdbac'; x.beginPath(); x.arc(px+16, py+8+bob, 12, 0, 7); x.fill();
+ // hair brown
+ x.fillStyle='#5b2c0c'; x.beginPath(); x.arc(px+16, py+2+bob, 13, 3.14, 6.2); x.fill();
+ x.fillRect(px+6, py-2+bob, 20, 8);
+ // face
+ x.fillStyle='#000'; x.beginPath(); x.arc(px+11, py+8+bob, 1.8, 0, 7); x.arc(px+21, py+8+bob, 1.8, 0, 7); x.fill();
+ x.fillStyle='#fff'; x.beginPath(); x.arc(px+11.5, py+7.5+bob, 0.6, 0, 7); x.arc(px+21.5, py+7.5+bob, 0.6, 0, 7); x.fill();
+ // smile
+ x.strokeStyle='#000'; x.lineWidth=1; x.beginPath(); x.arc(px+16, py+12+bob, 4, 0.2, 2.9); x.stroke();
+ // hood
+ x.strokeStyle='#1e40af'; x.lineWidth=2; x.strokeRect(px+4, py+14, 24, 4);
+}
+function drawNiceBackground(){
+ // sky gradient
+ let grad = x.createLinearGradient(0,0,0,H*0.65);
+ grad.addColorStop(0,'#60a5fa'); grad.addColorStop(1,'#93c5fd');
+ x.fillStyle=grad; x.fillRect(0,0,W,H*0.65);
+ // hills like banner
+ x.fillStyle='#86efac'; x.beginPath(); x.moveTo(0,H*0.65); x.quadraticCurveTo(W*0.25,H*0.5,W*0.5,H*0.58); x.quadraticCurveTo(W*0.75,H*0.65,W,H*0.55); x.lineTo(W,H*0.65); x.fill();
+ x.fillStyle='#4ade80'; x.beginPath(); x.moveTo(0,H*0.65); x.quadraticCurveTo(W*0.3,H*0.55,W*0.6,H*0.62); x.lineTo(W,H*0.65); x.fill();
+ // clouds nice
+ x.fillStyle='rgba(255,255,255,0.9)';
+ for(let i=0;i<4;i++){
+  let cx=(f*0.4+i*280)%(W+150)-70;
+  let cy=40+i*35;
+  x.beginPath(); x.arc(cx,cy,16,0,7); x.arc(cx+18,cy,20,0,7); x.arc(cx+36,cy,14,0,7); x.fill();
+ }
+ // trees
+ x.fillStyle='#16a34a'; x.fillRect(20,H*0.65-40,8,40); x.beginPath(); x.arc(24,H*0.65-45,18,0,7); x.fill();
+ x.fillRect(W-80,H*0.65-35,8,35); x.beginPath(); x.arc(W-76,H*0.65-40,16,0,7); x.fill();
+ // ground nice
+ x.fillStyle='#22c55e'; x.fillRect(0,H*0.65,W,H*0.35);
+ x.fillStyle='#15803d'; for(let i=0;i<W;i+=30){x.fillRect((i+f)%W,H*0.65+10,18,3)}
+ // cactus like banner
+ x.fillStyle='#16a34a'; x.fillRect(100,H*0.65-25,6,25); x.fillRect(94,H*0.65-18,8,4); x.fillRect(100,W>400?0:0,0,0);
+}
+function loop(){
+ if(dead)return; f++;
+ x.clearRect(0,0,W,H);
+ drawNiceBackground();
+ if(f%78==0)obs.push({x:W,y:H*0.65-36,w:28,h:36,type:Math.floor(Math.random()*2)});
+ if(f%90==0)coins.push({x:W,y:H*0.65-90-Math.random()*100,r:10});
+ p.vy+=0.75; p.y+=p.vy;
+ if(p.y>H*0.65-p.h){p.y=H*0.65-p.h; p.vy=0; p.j=0}
+ drawBannerBoy(p.x,p.y);
+ // obstacles - nice like banner
+ obs.forEach(o=>{
+  o.x-=spd;
+  if(o.type==0){ // wooden crate with yellow stripe
+   x.fillStyle='#a16207'; x.fillRect(o.x,o.y,o.w,o.h);
+   x.fillStyle='#fbbf24'; x.fillRect(o.x,o.y+8,o.w,6); x.fillRect(o.x,o.y+20,o.w,6);
+   x.strokeStyle='#000'; x.strokeRect(o.x,o.y,o.w,o.h);
+  } else { // rocks
+   x.fillStyle='#78716c'; x.beginPath(); x.moveTo(o.x,o.y+o.h); x.lineTo(o.x+6,o.y); x.lineTo(o.x+18,o.y+4); x.lineTo(o.x+o.w,o.y+10); x.lineTo(o.x+o.w,o.y+o.h); x.fill();
+  }
+ });
+ // coins gold nice
+ coins.forEach(cl=>{
+  cl.x-=spd;
+  x.fillStyle='#facc15'; x.strokeStyle='#ca8a04'; x.lineWidth=2;
+  x.beginPath(); x.arc(cl.x,cl.y,cl.r,0,7); x.fill(); x.stroke();
+  x.fillStyle='#fff'; x.beginPath(); x.arc(cl.x-2,cl.y-2,3,0,7); x.fill();
+ });
+ for(let o of obs){if(p.x+6<o.x+o.w&&p.x+p.w-8>o.x&&p.y+6<o.y+o.h&&p.y+p.h-4>o.y){end();return}}
+ coins=coins.filter(cl=>{if(p.x<cl.x+cl.r&&p.x+p.w>cl.x-cl.r&&p.y<cl.y+cl.r&&p.y+p.h>cl.y-cl.r){s+=20;return false}return cl.x>-30});
+ obs=obs.filter(o=>o.x>-40);
+ s++; if(f%5==0)document.getElementById('sc').innerText=s;
+ if(f%480==0)spd+=0.4;
+ requestAnimationFrame(loop);
+}
+function end(){dead=1;if(s>bst){bst=s;localStorage.jj_banner=bst;document.getElementById('bs').innerText=bst}document.getElementById('fs').innerText='Score: '+s+' Best: '+bst;document.getElementById('o').classList.add('show')}
+function jmp(){if(!p.j&&!dead){p.vy=-13.5;p.j=1}}
+c.addEventListener('touchstart',e=>{e.preventDefault();if(!dead)jmp()},{passive:false});
+addEventListener('keydown',e=>{if(e.code=='Space'&&!dead)jmp()});
+function stkPush(){let phone=prompt('Enter M-PESA number to receive STK (07...):');if(!phone)return;if(phone.length<10){alert('Invalid number');return}alert('✅ STK PUSH SENT to '+phone+'!\n\nCheck your phone! Enter M-PESA PIN on your phone popup to pay 20 BOB to 0707811193\n\nAfter paying paste code below!');}
+function pay(){let v=document.getElementById('cd').value.trim().toUpperCase();if(v.length<8){alert('Pay first! Click PAY button, pay on phone, then enter code');return}alert('✅ Verified! Continuing...');dead=0;p={x:70,y:H*0.65-p.h,w:32,h:56,vy:0,j:0};obs=[];coins=[];document.getElementById('o').classList.remove('show');document.getElementById('cd').value='';loop()}
+function hardReset(){if(confirm('Reset?'))init();}
+init();
+</script>
+</body>
+</html>
